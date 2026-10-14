@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-main: #FAF8F5;
+    --bg-creamy-top: #FFFDF9;
+    --bg-creamy-mid: #FAF8F5;
+    --bg-creamy-bottom: #F5F2EB;
+    --surface-card: #FFFFFF;
+    --surface-elevated: #F7F5F0;
+    --primary: #FF4F9A;
+    --secondary: #20D9C3;
+    --accent: #FF1493;
+    --accent-pink: #FF4F9A;
+    --gold-vip: #F59E0B;
+    --text-primary: #1E293B;
+    --text-muted: #64748B;
+    --border-subtle: rgba(226, 232, 240, 0.8);
+  }
+
+  body {
+    background-color: #FAF8F5;
+    background-image: linear-gradient(to bottom, #FFFDF9, #FAF8F5, #F5F2EB);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: var(--text-primary);
+    font-family: 'DM Sans', 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+.font-space {
+  font-family: 'Space Grotesk', 'Outfit', sans-serif;
+}
+
+.font-dm {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Glassmorphism & Luxury Accent Utilities */
+.glass-panel {
+  background: rgba(16, 23, 34, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.glass-card {
+  background: rgba(22, 32, 48, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-modal {
+  background: rgba(11, 17, 28, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(124, 92, 255, 0.2);
+}
+
+.glow-violet {
+  box-shadow: 0 0 30px -5px rgba(124, 92, 255, 0.35);
+}
+
+.glow-teal {
+  box-shadow: 0 0 30px -5px rgba(32, 217, 195, 0.35);
+}
+
+.glow-pink {
+  box-shadow: 0 0 30px -5px rgba(255, 79, 154, 0.35);
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Audio Waveform Animation */
+@keyframes audioWave {
+  0%, 100% {
+    height: 6px;
+  }
+  50% {
+    height: 28px;
+  }
+}
+
+.animate-audio-bar {
+  animation: audioWave 1.2s ease-in-out infinite;
+}
+
+/* Call Ring Pulse */
+@keyframes ringPulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(124, 92, 255, 0.7);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 24px rgba(124, 92, 255, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(124, 92, 255, 0);
+  }
+}
+
+.animate-call-ring {
+  animation: ringPulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}

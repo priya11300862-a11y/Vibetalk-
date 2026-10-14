@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#101722" />
+      <stop offset="100%" stop-color="#070B12" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C5CFF" />
+      <stop offset="50%" stop-color="#20D9C3" />
+      <stop offset="100%" stop-color="#FF4F9A" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="24" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <!-- Background -->
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)" stroke="#7C5CFF" stroke-opacity="0.3" stroke-width="4" />
+  
+  <!-- Subtle Ambient Glow -->
+  <circle cx="256" cy="256" r="140" fill="#7C5CFF" opacity="0.15" filter="url(#glow)" />
+  
+  <!-- VibeTalk Emblem: Futuristic 'V' intersecting dynamic speech wave rings -->
+  <g filter="url(#glow)">
+    <path d="M160 160 L256 352 L352 160" stroke="url(#primaryGrad)" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" />
+    <!-- Dynamic audio pulse dot -->
+    <circle cx="256" cy="216" r="18" fill="#20D9C3" />
+    <circle cx="210" cy="180" r="8" fill="#7C5CFF" />
+    <circle cx="302" cy="180" r="8" fill="#FF4F9A" />
+  </g>
+</svg>

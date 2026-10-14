@@ -1,0 +1,9 @@
+{
+  "name": "VibeTalk",
+  "description": "Premium 18+ adult social communication platform for verified adult connections, private messaging, voice calls, and video calls.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
