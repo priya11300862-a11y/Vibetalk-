@@ -2,30 +2,38 @@
 
 @layer base {
   :root {
-    --bg-main: #FAF8F5;
-    --bg-creamy-top: #FFFDF9;
-    --bg-creamy-mid: #FAF8F5;
-    --bg-creamy-bottom: #F5F2EB;
+    /* Exact KisanShop color system */
+    --primary-blue: #1877F2;
+    --light-blue: #EAF2FF;
+    --main-bg: #F5F7FC;
+    --white-surface: #FFFFFF;
+    --main-text: #303641;
+    --secondary-text: #7B8492;
+    --border-color: #E1E5EC;
+    --dark-nav: #0F141A;
+    --online-green: #16865C;
+    --notif-red: #D9485F;
+    --warning-orange: #F28C28;
+
+    /* Theme tokens mapping */
+    --bg-main: #F5F7FC;
     --surface-card: #FFFFFF;
-    --surface-elevated: #F7F5F0;
-    --primary: #FF4F9A;
-    --secondary: #20D9C3;
-    --accent: #FF1493;
-    --accent-pink: #FF4F9A;
-    --gold-vip: #F59E0B;
-    --text-primary: #1E293B;
-    --text-muted: #64748B;
-    --border-subtle: rgba(226, 232, 240, 0.8);
+    --surface-elevated: #FFFFFF;
+    --primary: #1877F2;
+    --secondary: #16865C;
+    --accent: #1877F2;
+    --text-primary: #303641;
+    --text-muted: #7B8492;
+    --border-subtle: #E1E5EC;
   }
 
   body {
-    background-color: #FAF8F5;
-    background-image: linear-gradient(to bottom, #FFFDF9, #FAF8F5, #F5F2EB);
-    background-attachment: fixed;
-    background-repeat: no-repeat;
-    background-size: cover;
-    color: var(--text-primary);
-    font-family: 'DM Sans', 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--main-bg);
+    color: var(--main-text);
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.45;
     min-height: 100vh;
     overflow-x: hidden;
     -webkit-tap-highlight-color: transparent;
@@ -34,46 +42,83 @@
   }
 }
 
-.font-space {
-  font-family: 'Space Grotesk', 'Outfit', sans-serif;
+/* Typography Utility Classes */
+.font-roboto {
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-.font-dm {
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+/* KisanShop Compact Card Surface & Border Utilities */
+.kisanshop-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E1E5EC;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+  transition: all 180ms ease-in-out;
 }
 
-/* Glassmorphism & Luxury Accent Utilities */
+.kisanshop-card-hover:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.kisanshop-button {
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 180ms ease-in-out;
+}
+
+.kisanshop-input {
+  border-radius: 8px;
+  border: 1px solid #E1E5EC;
+  background-color: #FFFFFF;
+  color: #303641;
+  font-size: 13px;
+  transition: all 180ms ease-in-out;
+}
+.kisanshop-input:focus {
+  outline: none;
+  border-color: #1877F2;
+  box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.15);
+}
+
+/* Filter Tab Pills */
+.kisanshop-pill-active {
+  background-color: #EAF2FF;
+  color: #1877F2;
+  border: 1px solid rgba(24, 119, 242, 0.25);
+  font-weight: 600;
+}
+
+.kisanshop-pill-inactive {
+  background-color: #FFFFFF;
+  color: #7B8492;
+  border: 1px solid #E1E5EC;
+  font-weight: 500;
+}
+.kisanshop-pill-inactive:hover {
+  background-color: #F8FAFC;
+  color: #303641;
+}
+
+/* Glassmorphism subtle fallbacks */
 .glass-panel {
-  background: rgba(16, 23, 34, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid #E1E5EC;
 }
 
 .glass-card {
-  background: rgba(22, 32, 48, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #FFFFFF;
+  border: 1px solid #E1E5EC;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
 }
 
 .glass-modal {
-  background: rgba(11, 17, 28, 0.94);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(124, 92, 255, 0.2);
-}
-
-.glow-violet {
-  box-shadow: 0 0 30px -5px rgba(124, 92, 255, 0.35);
-}
-
-.glow-teal {
-  box-shadow: 0 0 30px -5px rgba(32, 217, 195, 0.35);
-}
-
-.glow-pink {
-  box-shadow: 0 0 30px -5px rgba(255, 79, 154, 0.35);
+  background: #FFFFFF;
+  border: 1px solid #E1E5EC;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 /* Custom Sleek Scrollbar */
@@ -83,16 +128,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #F5F7FC;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: #CBD5E1;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: #94A3B8;
 }
 
 /* Audio Waveform Animation */
@@ -101,7 +146,7 @@
     height: 6px;
   }
   50% {
-    height: 28px;
+    height: 24px;
   }
 }
 
@@ -112,19 +157,97 @@
 /* Call Ring Pulse */
 @keyframes ringPulse {
   0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(124, 92, 255, 0.7);
+    transform: scale(0.96);
+    box-shadow: 0 0 0 0 rgba(24, 119, 242, 0.6);
   }
   70% {
-    transform: scale(1.05);
-    box-shadow: 0 0 0 24px rgba(124, 92, 255, 0);
+    transform: scale(1.04);
+    box-shadow: 0 0 0 20px rgba(24, 119, 242, 0);
   }
   100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(124, 92, 255, 0);
+    transform: scale(0.96);
+    box-shadow: 0 0 0 0 rgba(24, 119, 242, 0);
   }
 }
 
 .animate-call-ring {
   animation: ringPulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Accessibility Focus Ring Standard (WCAG AA Compliant) */
+:focus-visible {
+  outline: 2px solid #1877F2;
+  outline-offset: 2px;
+}
+
+/* High-Contrast Mode - WCAG 2.1 AA / AAA Compliance */
+html.high-contrast,
+body.high-contrast {
+  --bg-main: #000000;
+  --surface-card: #000000;
+  --surface-elevated: #0f0f0f;
+  --text-primary: #FFFFFF;
+  --text-muted: #F1F5F9;
+  --border-subtle: #FFFFFF;
+  --primary-blue: #FFFF00;
+  background-color: #000000 !important;
+  background-image: none !important;
+  color: #FFFFFF !important;
+}
+
+html.high-contrast :focus-visible {
+  outline: 3px solid #FFFF00 !important;
+  outline-offset: 3px !important;
+}
+
+html.high-contrast header,
+html.high-contrast nav,
+html.high-contrast footer,
+html.high-contrast aside {
+  background-color: #000000 !important;
+  border-color: #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+
+html.high-contrast .kisanshop-card,
+html.high-contrast .kisanshop-input,
+html.high-contrast .glass-panel,
+html.high-contrast .glass-card,
+html.high-contrast .glass-modal {
+  background: #000000 !important;
+  border: 2px solid #FFFFFF !important;
+  box-shadow: none !important;
+  color: #FFFFFF !important;
+}
+
+html.high-contrast [class*="bg-[#F5F7FC]"],
+html.high-contrast [class*="bg-[#EAF2FF]"],
+html.high-contrast [class*="bg-[#FAF8F5]"],
+html.high-contrast [class*="bg-stone-"],
+html.high-contrast .bg-white {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+}
+
+html.high-contrast [class*="text-[#7B8492]"],
+html.high-contrast [class*="text-slate-4"],
+html.high-contrast [class*="text-slate-5"] {
+  color: #F8FAFC !important;
+}
+
+html.high-contrast [class*="border-[#E1E5EC]"],
+html.high-contrast [class*="border-stone-"] {
+  border-color: #FFFFFF !important;
+}
+
+html.high-contrast .kisanshop-pill-active {
+  background-color: #FFFF00 !important;
+  color: #000000 !important;
+  border-color: #FFFFFF !important;
+}
+
+html.high-contrast .kisanshop-pill-inactive {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+  border-color: #FFFFFF !important;
 }

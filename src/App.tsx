@@ -1,11 +1,14 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { SocialProvider, useSocial } from './contexts/SocialContext';
-import { CallProvider, useCall } from './contexts/CallContext';
+import { CallProvider } from './contexts/CallContext';
+import { I18nProvider, useI18n } from './contexts/I18nContext';
+import { AccessibilityProvider, useAccessibility } from './contexts/AccessibilityContext';
 
 import { Navbar } from './components/layouts/Navbar';
 import { BottomNav } from './components/layouts/BottomNav';
+import { SkipToContent } from './components/common/SkipToContent';
 import { AgeDisclaimerBanner } from './components/common/AgeDisclaimerBanner';
 import { OfflineIndicator } from './components/common/OfflineIndicator';
 import { SupabaseSetupModal } from './components/common/SupabaseSetupModal';
@@ -13,7 +16,6 @@ import { SupabaseSetupModal } from './components/common/SupabaseSetupModal';
 import { LandingPage } from './components/landing/LandingPage';
 import { HomeDashboard } from './components/home/HomeDashboard';
 import { ConnectRoomsView } from './components/connect/ConnectRoomsView';
-import { DiscoverView } from './components/discover/DiscoverView';
 import { ChatView } from './components/chat/ChatView';
 import { CallHistoryView } from './components/calls/CallHistoryView';
 import { ProfileView } from './components/profile/ProfileView';
@@ -25,6 +27,10 @@ import { SafetyCenterModal } from './components/safety/SafetyCenterModal';
 import { AdminDashboardModal } from './components/admin/AdminDashboardModal';
 import { SubscriptionModal } from './components/subscription/SubscriptionModal';
 import { NotificationsModal } from './components/notifications/NotificationsModal';
+import { AdminLogin } from './components/admin/AdminLogin';
+import { AdminDashboard } from './components/admin/AdminDashboard';
+import { LoginPage } from './components/auth/LoginPage';
+import { AdminProvider, useAdmin } from './contexts/AdminContext';
 import { UserProfile } from './types';
 
 const MAIN_TABS = ['home', 'discover', 'profile', 'messages', 'calls'];
@@ -32,6 +38,61 @@ const MAIN_TABS = ['home', 'discover', 'profile', 'messages', 'calls'];
 const MainAppContent: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const { activeConversationId } = useSocial();
+  const { t } = useI18n();
+  const { isHighContrast } = useAccessibility();
+  const { isAdminAuthenticated, platformSettings } = useAdmin();
+
+  // Route state: 'app' | 'admin' | 'admin_login' | 'login'
+  const [currentRoute, setCurrentRoute] = useState<'app' | 'admin' | 'admin_login' | 'login'>(() => {
+    const path = window.location.pathname.toLowerCase();
+    const hash = window.location.hash.toLowerCase();
+    if (path === '/admin/login' || hash === '#admin/login') return 'admin_login';
+    if (path === '/admin' || hash === '#admin') return 'admin';
+    if (path === '/login' || hash === '#login') return 'login';
+    return 'app';
+  });
+
+  React.useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname.toLowerCase();
+      const hash = window.location.hash.toLowerCase();
+      if (path === '/admin/login' || hash === '#admin/login') {
+        setCurrentRoute('admin_login');
+      } else if (path === '/admin' || hash === '#admin') {
+        setCurrentRoute('admin');
+      } else if (path === '/login' || hash === '#login') {
+        setCurrentRoute('login');
+      } else {
+        setCurrentRoute('app');
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const navigateToRoute = (route: 'app' | 'admin' | 'admin_login' | 'login') => {
+    setCurrentRoute(route);
+    const targetPath =
+      route === 'admin'
+        ? '/admin'
+        : route === 'admin_login'
+        ? '/admin/login'
+        : route === 'login'
+        ? '/login'
+        : '/';
+    try {
+      window.history.pushState({}, '', targetPath);
+    } catch {
+      window.location.hash =
+        route === 'admin'
+          ? '#admin'
+          : route === 'admin_login'
+          ? '#admin/login'
+          : route === 'login'
+          ? '#login'
+          : '#';
+    }
+  };
 
   // Navigation tab: 'home' | 'discover' | 'profile' | 'messages' | 'calls'
   const [currentTab, setCurrentTab] = useState<string>('home');
@@ -129,8 +190,71 @@ const MainAppContent: React.FC = () => {
   // If visitor is not authenticated and hasn't explicitly clicked "Explore VibeTalk", show Landing Page
   const showLanding = !isAuthenticated && !hasExploredFromLanding;
 
+  // Dedicated /admin and /admin/login route rendering
+  if (currentRoute === 'admin') {
+    if (isAdminAuthenticated) {
+      return <AdminDashboard onExitToApp={() => navigateToRoute('app')} />;
+    }
+    return (
+      <AdminLogin
+        onLoginSuccess={() => navigateToRoute('admin')}
+        onExitToApp={() => navigateToRoute('app')}
+      />
+    );
+  }
+
+  if (currentRoute === 'admin_login') {
+    return (
+      <AdminLogin
+        onLoginSuccess={() => navigateToRoute('admin')}
+        onExitToApp={() => navigateToRoute('app')}
+      />
+    );
+  }
+
+  if (currentRoute === 'login') {
+    return (
+      <LoginPage
+        onLoginSuccess={() => navigateToRoute('app')}
+        onExitToApp={() => navigateToRoute('app')}
+      />
+    );
+  }
+
+  // Maintenance mode active
+  if (platformSettings.maintenanceMode && !isAdminAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#F5F7FC] flex items-center justify-center p-6 text-center font-sans">
+        <div className="max-w-md w-full bg-white rounded-3xl border border-[#E1E5EC] p-8 space-y-4 shadow-xl">
+          <div className="w-16 h-16 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto border border-amber-200">
+            <span className="text-2xl font-bold">⚠️</span>
+          </div>
+          <h1 className="text-xl font-bold text-[#303641]">System Maintenance</h1>
+          <p className="text-xs text-[#7B8492] leading-relaxed">
+            {platformSettings.maintenanceNotice}
+          </p>
+          <div className="pt-2 flex flex-col gap-2">
+            <button
+              onClick={() => navigateToRoute('admin')}
+              className="text-xs text-[#1877F2] font-semibold hover:underline cursor-pointer"
+            >
+              Administrator Login Portal →
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FFFDF9] via-[#FAF8F5] to-[#F5F2EB] text-black font-bold flex flex-col justify-between selection:bg-[#FF4F9A]/30 selection:text-black pb-16 md:pb-0 overflow-x-hidden">
+    <div
+      className={`min-h-screen flex flex-col justify-between pb-16 md:pb-0 overflow-x-hidden ${
+        isHighContrast
+          ? 'bg-black text-white font-bold'
+          : 'bg-[#F5F7FC] text-[#303641] selection:bg-[#1877F2]/20 selection:text-[#1877F2]'
+      }`}
+    >
+      <SkipToContent />
       <AgeDisclaimerBanner />
       <OfflineIndicator />
 
@@ -144,14 +268,20 @@ const MainAppContent: React.FC = () => {
           setTargetUserForReport(null);
           setIsSafetyOpen(true);
         }}
-        onOpenAdmin={() => setIsAdminOpen(true)}
+        onOpenAdmin={() => navigateToRoute('admin')}
         onOpenSubscription={() => setIsSubscriptionOpen(true)}
         onOpenSupabaseGuide={() => setIsSupabaseGuideOpen(true)}
         onOpenAuth={() => openAuthWithMode('login')}
       />
 
       {/* Viewport Content */}
-      <main className="flex-1 w-full flex flex-col overflow-x-hidden relative">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        role="main"
+        aria-label={t('a11y.mainContent')}
+        className="flex-1 w-full flex flex-col overflow-x-hidden relative focus:outline-hidden"
+      >
         {showLanding ? (
           <LandingPage
             onOpenAuth={openAuthWithMode}
@@ -214,12 +344,21 @@ const MainAppContent: React.FC = () => {
             </AnimatePresence>
 
             {/* Mobile Tab Swipe Indicator Dots */}
-            <div className="md:hidden flex items-center justify-center gap-1.5 py-1.5 select-none pointer-events-none opacity-50">
+            <div
+              aria-hidden="true"
+              className="md:hidden flex items-center justify-center gap-1.5 py-1.5 select-none pointer-events-none opacity-50"
+            >
               {MAIN_TABS.map((tab) => (
                 <div
                   key={tab}
                   className={`h-1 rounded-full transition-all duration-300 ${
-                    currentTab === tab ? 'w-4 bg-[#7C5CFF]' : 'w-1 bg-white/20'
+                    currentTab === tab
+                      ? isHighContrast
+                        ? 'w-4 bg-yellow-400'
+                        : 'w-4 bg-[#1877F2]'
+                      : isHighContrast
+                      ? 'w-1 bg-white/40'
+                      : 'w-1 bg-[#CBD5E1]'
                   }`}
                 />
               ))}
@@ -281,12 +420,18 @@ const MainAppContent: React.FC = () => {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <SocialProvider>
-        <CallProvider>
-          <MainAppContent />
-        </CallProvider>
-      </SocialProvider>
-    </AuthProvider>
+    <AccessibilityProvider>
+      <I18nProvider>
+        <AuthProvider>
+          <SocialProvider>
+            <CallProvider>
+              <AdminProvider>
+                <MainAppContent />
+              </AdminProvider>
+            </CallProvider>
+          </SocialProvider>
+        </AuthProvider>
+      </I18nProvider>
+    </AccessibilityProvider>
   );
 }

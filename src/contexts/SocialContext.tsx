@@ -68,6 +68,10 @@ interface SocialContextType {
   adminSuspendUser: (userId: string) => void;
   adminBanUser: (userId: string) => void;
   adminResolveReport: (reportId: string, resolution: 'resolved' | 'dismissed') => void;
+  // Typing indicators
+  typingUsers: Record<string, { isTyping: boolean; username: string }>;
+  setTyping: (conversationId: string, isTyping: boolean, username?: string) => void;
+  triggerPeerTypingSimulation: (conversationId: string) => void;
   // Subscription
   upgradeSubscription: (tier: SubscriptionTier) => void;
   // Data Export
@@ -461,6 +465,25 @@ export const SocialProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     verifiedOnly: false,
   });
 
+  // Real-time typing indicators state
+  const [typingUsers, setTypingUsers] = useState<Record<string, { isTyping: boolean; username: string }>>({});
+
+  const setTyping = (conversationId: string, isTyping: boolean, username = '') => {
+    setTypingUsers((prev) => ({
+      ...prev,
+      [conversationId]: { isTyping, username },
+    }));
+  };
+
+  const triggerPeerTypingSimulation = (conversationId: string) => {
+    const targetConv = conversations.find((c) => c.id === conversationId);
+    const peerName = targetConv?.participant.firstName || targetConv?.participant.displayName || 'Friend';
+    setTyping(conversationId, true, peerName);
+    setTimeout(() => {
+      setTyping(conversationId, false, peerName);
+    }, 3500);
+  };
+
   // Persistence
   useEffect(() => {
     localStorage.setItem('vibetalk_profiles', JSON.stringify(profiles));
@@ -531,29 +554,74 @@ export const SocialProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       )
     );
 
-    // Simulate peer typing & response after short delay if chatting with Clara or Marcus
-    if (activeConversation?.participant.id === 'usr_clara_002') {
+    // Simulate message delivery after 400ms
+    setTimeout(() => {
+      setChatMessages((prev) => ({
+        ...prev,
+        [activeConversationId]: (prev[activeConversationId] || []).map((m) =>
+          m.id === newMessage.id ? { ...m, status: 'delivered' } : m
+        ),
+      }));
+    }, 450);
+
+    // Simulate peer real-time typing & response after short delay for active conversation
+    if (activeConversation && activeConversationId) {
+      const convId = activeConversationId;
+      const participant = activeConversation.participant;
+      const peerName = participant.firstName || participant.displayName || 'Peer';
+
       setTimeout(() => {
-        const replyMsg: Message = {
-          id: `msg_${Date.now() + 1}`,
-          conversationId: activeConversationId,
-          senderId: 'usr_clara_002',
-          content: 'That sounds delightful! Truly enjoying this conversation.',
-          messageType: 'text',
-          reactions: {},
-          status: 'read',
-          createdAt: 'Just now',
-        };
+        // Peer reads the message ('read' / Seen) and starts typing
         setChatMessages((prev) => ({
           ...prev,
-          [activeConversationId]: [...(prev[activeConversationId] || []), replyMsg],
+          [convId]: (prev[convId] || []).map((m) =>
+            m.id === newMessage.id ? { ...m, status: 'read' } : m
+          ),
         }));
-        setConversations((prev) =>
-          prev.map((c) =>
-            c.id === activeConversationId ? { ...c, lastMessage: replyMsg, updatedAt: 'Just now' } : c
-          )
-        );
-      }, 2500);
+        setTyping(convId, true, peerName);
+
+        setTimeout(() => {
+          setTyping(convId, false, peerName);
+
+          const replies: Record<string, string> = {
+            conv_kristin: "That's wonderful to hear! Love connecting with vibrant creators here on VibeTalk ✨",
+            conv_daniel: "Great perspective! I'll incorporate these edits into our design concept right away.",
+            conv_resilient: "Sounds great! Looking forward to catching up soon.",
+            conv_thaaraa: "Hello! Always nice hearing from you.",
+            conv_jamuna: "Definitely! Glad we got in touch today.",
+            conv_iniya: "Yes, absolutely agreed! Let's discuss more soon.",
+            conv_clara: "That sounds delightful! Truly enjoying this conversation.",
+            conv_marcus: "Brilliant, thanks for sharing! Taking a look right now.",
+            conv_elena: "Just landed and saw this! Love the vibes ✨",
+          };
+
+          const replyContent =
+            replies[convId] ||
+            `Thanks for your message! Really glad we connected on VibeTalk.`;
+
+          const replyMsg: Message = {
+            id: `msg_${Date.now() + 1}`,
+            conversationId: convId,
+            senderId: participant.id,
+            content: replyContent,
+            messageType: 'text',
+            reactions: {},
+            status: 'read',
+            createdAt: 'Just now',
+          };
+
+          setChatMessages((prev) => ({
+            ...prev,
+            [convId]: [...(prev[convId] || []), replyMsg],
+          }));
+
+          setConversations((prev) =>
+            prev.map((c) =>
+              c.id === convId ? { ...c, lastMessage: replyMsg, updatedAt: 'Just now' } : c
+            )
+          );
+        }, 2200);
+      }, 700);
     }
   };
 
@@ -868,6 +936,9 @@ export const SocialProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         adminSuspendUser,
         adminBanUser,
         adminResolveReport,
+        typingUsers,
+        setTyping,
+        triggerPeerTypingSimulation,
         upgradeSubscription,
         downloadMyData,
       }}

@@ -39,6 +39,7 @@ export interface UserProfile {
   lastSeen: string;
   role: UserRole;
   subscriptionTier: SubscriptionTier;
+  tier?: string;
   coins?: number;
   championBadge?: string;
   unlockedBadges?: ProfileBadge[];
@@ -104,6 +105,7 @@ export interface Message {
   senderId: string;
   content: string;
   messageType: MessageType;
+  type?: MessageType;
   mediaUrl?: string;
   audioDuration?: number; // seconds for voice messages
   replyToId?: string;
@@ -115,6 +117,7 @@ export interface Message {
   isEdited?: boolean;
   isDeletedForEveryone?: boolean;
   status: 'sending' | 'sent' | 'delivered' | 'read';
+  timestamp?: string;
   createdAt: string;
 }
 
@@ -123,6 +126,7 @@ export interface Conversation {
   participant: UserProfile;
   lastMessage?: Message;
   unreadCount: number;
+  isPinned?: boolean;
   updatedAt: string;
 }
 

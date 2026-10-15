@@ -104,18 +104,18 @@ export const ProfileOptionsModal: React.FC<ProfileOptionsModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-3 sm:p-4 overflow-y-auto">
-      <div className="w-full max-w-lg rounded-3xl bg-white border border-stone-200/90 shadow-2xl text-left overflow-hidden relative">
+      <div className="w-full max-w-lg rounded-xl bg-white border border-[#E1E5EC] shadow-xl text-left overflow-hidden relative">
         {/* Modal Header */}
-        <div className="p-4 sm:p-5 border-b border-stone-200/80 bg-[#FAF8F5]/90 flex items-center justify-between">
+        <div className="p-4 sm:p-5 border-b border-[#E1E5EC] bg-white flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#FF4F9A] to-[#9C7BFF] text-white flex items-center justify-center shadow-xs">
+            <div className="w-9 h-9 rounded-lg bg-[#EAF2FF] text-[#1877F2] border border-[#1877F2]/30 flex items-center justify-center shadow-xs">
               <Sliders className="w-4 h-4 stroke-[2.5]" />
             </div>
             <div>
-              <h3 className="text-base font-extrabold text-slate-900 tracking-tight">
+              <h3 className="text-base font-bold text-[#303641] tracking-tight">
                 Profile Options
               </h3>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-[#7B8492]">
                 {isOwnProfile
                   ? 'Privacy preview, audience controls & settings'
                   : `Interaction options for ${profile.displayName}`}
@@ -124,20 +124,20 @@ export const ProfileOptionsModal: React.FC<ProfileOptionsModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full hover:bg-stone-200/60 text-slate-500 hover:text-slate-800 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-[#F5F7FC] text-[#7B8492] hover:text-[#303641] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Navigation Pills */}
-        <div className="px-4 sm:px-5 pt-3 pb-1 border-b border-stone-100 flex items-center gap-2 overflow-x-auto no-scrollbar">
+        <div className="px-4 sm:px-5 pt-3 pb-1 border-b border-[#E1E5EC] flex items-center gap-2 overflow-x-auto no-scrollbar">
           <button
             onClick={() => setActiveTab('options')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+            className={`px-3 py-1.5 rounded-full text-xs transition-colors shrink-0 ${
               activeTab === 'options'
-                ? 'bg-slate-900 text-white shadow-xs'
-                : 'bg-stone-100 text-slate-600 hover:bg-stone-200/70'
+                ? 'bg-[#EAF2FF] text-[#1877F2] border border-[#1877F2]/30 font-semibold shadow-xs'
+                : 'bg-white text-[#7B8492] border border-[#E1E5EC] hover:bg-[#F5F7FC] hover:text-[#303641]'
             }`}
           >
             {isOwnProfile ? 'Quick Actions' : 'Social Actions'}
@@ -147,10 +147,10 @@ export const ProfileOptionsModal: React.FC<ProfileOptionsModalProps> = ({
             <>
               <button
                 onClick={() => setActiveTab('preview')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 rounded-full text-xs transition-colors shrink-0 flex items-center gap-1.5 ${
                   activeTab === 'preview'
-                    ? 'bg-[#9C7BFF] text-white shadow-xs'
-                    : 'bg-stone-100 text-slate-600 hover:bg-stone-200/70'
+                    ? 'bg-[#EAF2FF] text-[#1877F2] border border-[#1877F2]/30 font-semibold shadow-xs'
+                    : 'bg-white text-[#7B8492] border border-[#E1E5EC] hover:bg-[#F5F7FC] hover:text-[#303641]'
                 }`}
               >
                 <Eye className="w-3.5 h-3.5" />
@@ -159,10 +159,10 @@ export const ProfileOptionsModal: React.FC<ProfileOptionsModalProps> = ({
 
               <button
                 onClick={() => setActiveTab('visibility')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 rounded-full text-xs transition-colors shrink-0 flex items-center gap-1.5 ${
                   activeTab === 'visibility'
-                    ? 'bg-[#FF4F9A] text-white shadow-xs'
-                    : 'bg-stone-100 text-slate-600 hover:bg-stone-200/70'
+                    ? 'bg-[#EAF2FF] text-[#1877F2] border border-[#1877F2]/30 font-semibold shadow-xs'
+                    : 'bg-white text-[#7B8492] border border-[#E1E5EC] hover:bg-[#F5F7FC] hover:text-[#303641]'
                 }`}
               >
                 <Shield className="w-3.5 h-3.5" />

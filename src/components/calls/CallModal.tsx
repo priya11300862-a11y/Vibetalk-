@@ -55,7 +55,7 @@ export const CallModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-2xl p-2 sm:p-4 select-none">
-      <div className="relative w-full max-w-4xl h-full max-h-[850px] rounded-3xl bg-[#1C0518] border border-pink-500/20 overflow-hidden shadow-2xl flex flex-col justify-between">
+      <div className="relative w-full max-w-4xl h-full max-h-[850px] rounded-2xl bg-[#0F141A] border border-white/10 overflow-hidden shadow-2xl flex flex-col justify-between">
         
         {/* Top Header Floating Bar */}
         <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between text-xs">
