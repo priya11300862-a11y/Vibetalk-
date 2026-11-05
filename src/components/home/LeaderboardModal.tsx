@@ -94,9 +94,9 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
 
         {/* Podium / Leader List */}
         <div className="space-y-2.5 max-h-[50vh] overflow-y-auto pr-1">
-          {leaders.map((leader) => (
+          {leaders.map((leader, idx) => (
             <div
-              key={leader.profile.id}
+              key={`leader-${leader.profile.id}-${idx}`}
               className={`p-3.5 rounded-2xl border flex items-center justify-between gap-3 ${
                 leader.rank === 1
                   ? 'bg-amber-500/10 border-amber-500/40'

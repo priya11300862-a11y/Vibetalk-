@@ -4,6 +4,7 @@ import { INITIAL_DISCOVER_PROFILES } from '../../services/mockData';
 import { useCall } from '../../contexts/CallContext';
 import { UserProfile } from '../../types';
 import { UserStatusDot, getEffectiveStatus } from '../common/UserStatusBadge';
+import { VerifiedBadge } from '../common/VerifiedBadge';
 
 interface RandomConnectModalProps {
   isOpen: boolean;
@@ -99,7 +100,7 @@ export const RandomConnectModal: React.FC<RandomConnectModalProps> = ({ isOpen, 
               <div className="space-y-1">
                 <div className="flex items-center justify-center gap-1.5">
                   <h3 className="text-lg font-bold text-white">{matchedProfile.displayName}</h3>
-                  <CheckCircle2 className="w-4 h-4 text-[#20D9C3]" />
+                  {matchedProfile.isVerified && <VerifiedBadge size="sm" />}
                   {matchedProfile.activeTopic && (
                     <span className="px-2 py-0.5 rounded-full bg-pink-500/25 border border-pink-400/40 text-pink-300 text-[10px] font-extrabold">
                       #{matchedProfile.activeTopic}

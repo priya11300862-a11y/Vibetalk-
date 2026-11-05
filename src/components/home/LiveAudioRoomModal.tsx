@@ -11,6 +11,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { LiveAudioRoom } from '../../types';
+import { VerifiedBadge } from '../common/VerifiedBadge';
 
 interface LiveAudioRoomModalProps {
   room: LiveAudioRoom | null;
@@ -60,7 +61,7 @@ export const LiveAudioRoomModal: React.FC<LiveAudioRoomModalProps> = ({ room, is
           <div className="grid grid-cols-3 gap-3">
             {room.speakers.map((speaker, idx) => (
               <div
-                key={speaker.id}
+                key={`speaker-${speaker.id}-${idx}`}
                 className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 flex flex-col items-center text-center space-y-1.5 relative group"
               >
                 {/* Glowing voice ring for active speaker */}
@@ -82,8 +83,9 @@ export const LiveAudioRoomModal: React.FC<LiveAudioRoomModalProps> = ({ room, is
                   <div className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-[#20D9C3] animate-pulse" />
                 </div>
 
-                <span className="text-xs font-bold text-white truncate max-w-full">
-                  {speaker.displayName}
+                <span className="text-xs font-bold text-white truncate max-w-full flex items-center justify-center gap-1">
+                  <span>{speaker.displayName}</span>
+                  {speaker.isVerified && <VerifiedBadge size="xs" />}
                 </span>
                 <span className="text-[10px] text-slate-400">
                   {speaker.nativeLanguageScript || speaker.country}

@@ -13,6 +13,7 @@ import {
   Flame,
   ShieldCheck,
   ChevronRight,
+  Phone,
   Plus,
   Gift,
   Crown,
@@ -27,6 +28,7 @@ import { UserProfile, LiveAudioRoom, ProfileBadge } from '../../types';
 import { INITIAL_LIVE_ROOMS } from '../../services/mockData';
 import { DAILY_REWARD_SCHEDULE, DailyRewardDay } from '../../services/interestTags';
 import { UserStatusDot, getEffectiveStatus } from '../common/UserStatusBadge';
+import { VerifiedBadge } from '../common/VerifiedBadge';
 
 import { CoinWalletModal } from './CoinWalletModal';
 import { LeaderboardModal } from './LeaderboardModal';
@@ -271,8 +273,8 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({ onNavigateTab }) =
             <span>Daily Rewards System</span>
           </div>
 
-          <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#FFF7ED] border border-[#F28C28]/30 text-xs font-semibold text-[#F28C28]">
-            <Flame className="w-3.5 h-3.5 text-[#F28C28] fill-[#F28C28]" />
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-bold shadow-xs">
+            <Flame className="w-4 h-4 fill-white stroke-orange-600 animate-pulse" />
             <span>{dailyStreak} Day Streak</span>
           </div>
         </div>
@@ -382,12 +384,12 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({ onNavigateTab }) =
 
         {/* Live Connect Cards (Clean white surfaces with subtle borders) */}
         <div className="flex items-stretch gap-3 overflow-x-auto pb-2 pt-0.5 no-scrollbar -mx-1 px-1">
-          {profiles.slice(0, 6).map((profile) => {
+          {profiles.slice(0, 6).map((profile, pIdx) => {
             const friendStatus = getEffectiveStatus(profile);
 
             return (
               <div
-                key={profile.id}
+                key={`home-profile-${profile.id}-${pIdx}`}
                 className="w-38 sm:w-42 shrink-0 rounded-xl bg-white border border-[#E1E5EC] p-3 flex flex-col items-center justify-between space-y-2.5 shadow-xs hover:border-[#CBD5E1] transition-all group"
               >
                 {/* Avatar with Status */}
@@ -413,9 +415,12 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({ onNavigateTab }) =
 
                 {/* Profile Name & Status Text */}
                 <div className="text-center space-y-0.5 w-full">
-                  <span className="block text-xs font-bold text-[#303641] truncate">
-                    {profile.displayName}
-                  </span>
+                  <div className="flex items-center justify-center gap-1">
+                    <span className="block text-xs font-bold text-[#303641] truncate">
+                      {profile.displayName}
+                    </span>
+                    {profile.isVerified && <VerifiedBadge size="xs" />}
+                  </div>
                   <span
                     className={`text-[10px] font-medium ${
                       friendStatus === 'online'
@@ -465,47 +470,117 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({ onNavigateTab }) =
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {INITIAL_LIVE_ROOMS.map((room) => (
-            <div
-              key={room.id}
-              onClick={() => setSelectedRoom(room)}
-              className="p-3.5 rounded-xl bg-white border border-[#E1E5EC] hover:border-[#1877F2]/40 cursor-pointer transition-all space-y-2.5 shadow-xs group"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 px-2 py-0.2 rounded-full bg-[#FFF1F2] text-[#D9485F] text-[10px] font-bold border border-[#D9485F]/30">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#D9485F] animate-ping" />
-                  <span>LIVE</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {INITIAL_LIVE_ROOMS.map((room, rIdx) => {
+            const themes = [
+              {
+                pastelBg: 'bg-gradient-to-b from-[#E0F7FA] via-[#E8F8FE] to-[#EAF6FB]',
+                ringStyle: 'bg-gradient-to-tr from-amber-200 via-rose-100 to-amber-300 ring-2 ring-amber-300/80 shadow-md',
+                ringBadge: 'PEARL',
+                hasStar: false,
+              },
+              {
+                pastelBg: 'bg-gradient-to-b from-[#F3E8FF] via-[#F8F2FF] to-[#FAF5FF]',
+                ringStyle: 'bg-gradient-to-tr from-slate-500 via-slate-300 to-slate-600 ring-2 ring-slate-300 shadow-md',
+                ringBadge: null,
+                hasStar: true,
+              },
+            ];
+            const theme = themes[rIdx % themes.length];
+            const nativeScript =
+              room.language?.toLowerCase().includes('tamil')
+                ? 'தமிழ்'
+                : room.language?.toLowerCase().includes('hindi')
+                ? 'हिंदी'
+                : 'English';
+
+            return (
+              <div
+                key={room.id}
+                className="relative rounded-[26px] border border-[#E1E5EC] bg-white overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col justify-between group"
+              >
+                {/* Top Pastel Header Area */}
+                <div className={`h-24 w-full ${theme.pastelBg} relative p-3 flex items-start justify-between`}>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-[#16865C] border border-emerald-200 text-[10.5px] font-bold shadow-2xs">
+                    <span className="w-2 h-2 rounded-full bg-[#16865C] animate-pulse" />
+                    <span>LIVE</span>
+                  </span>
+
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-[#303641] border border-[#E1E5EC] text-[11px] font-semibold shadow-2xs">
+                    <Users className="w-3.5 h-3.5 text-[#1877F2]" />
+                    <span>{room.listenerCount}</span>
+                  </span>
                 </div>
-                <span className="text-[11px] text-[#7B8492] flex items-center gap-1">
-                  <Users className="w-3.5 h-3.5 text-[#1877F2]" />
-                  <span>{room.listenerCount} listening</span>
-                </span>
-              </div>
 
-              <h3 className="text-xs font-bold text-[#303641] group-hover:text-[#1877F2] transition-colors truncate">
-                {room.title}
-              </h3>
+                {/* Centered Circular Avatar with Decorative Ring Frame & Badges */}
+                <div className="-mt-13 flex flex-col items-center relative z-10 px-3">
+                  <div
+                    onClick={() => setSelectedRoom(room)}
+                    className={`relative w-20 h-20 rounded-full p-1 cursor-pointer transition-transform group-hover:scale-105 ${theme.ringStyle}`}
+                    title={`Host: ${room.host.displayName}`}
+                  >
+                    {theme.hasStar && (
+                      <span className="absolute -top-1.5 left-1/2 -translate-x-1/2 text-white drop-shadow text-xs">
+                        ✦
+                      </span>
+                    )}
 
-              <div className="flex items-center justify-between pt-1">
-                <div className="flex items-center -space-x-1.5">
-                  {room.speakers.map((spk) => (
-                    <div
-                      key={spk.id}
-                      className="w-7 h-7 rounded-full overflow-hidden border-2 border-white bg-slate-200"
-                    >
-                      <img src={spk.avatarUrl} alt={spk.displayName} className="w-full h-full object-cover" />
+                    {theme.ringBadge && (
+                      <span className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 px-1 py-0.2 rounded-full bg-amber-100 border border-amber-300 text-[8px] font-black text-amber-900 tracking-tighter uppercase shadow-2xs rotate-90">
+                        {theme.ringBadge}
+                      </span>
+                    )}
+
+                    <div className="w-full h-full rounded-full overflow-hidden bg-slate-100 border-2 border-white shadow-inner">
+                      <img
+                        src={room.host.avatarUrl}
+                        alt={room.host.displayName}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
-                  ))}
+
+                    <span
+                      className="absolute top-0 right-0 w-4.5 h-4.5 rounded-full bg-[#16865C] border-2 border-white shadow-xs"
+                      title="Online now"
+                    />
+
+                    <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-white border border-[#E1E5EC] text-xs font-bold text-[#303641] shadow-xs flex items-center gap-1 whitespace-nowrap">
+                      <span>{nativeScript}</span>
+                    </span>
+                  </div>
                 </div>
 
-                <span className="text-xs font-semibold text-[#1877F2] flex items-center gap-0.5">
-                  <span>Tune in</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </span>
+                {/* Card Body */}
+                <div className="px-4 pt-4 pb-4 text-center flex-1 flex flex-col justify-between space-y-3">
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-center gap-1.5">
+                      <h4
+                        onClick={() => setSelectedRoom(room)}
+                        className="text-base font-black text-[#303641] hover:text-[#1877F2] transition-colors truncate cursor-pointer tracking-tight"
+                      >
+                        {room.host.displayName}
+                      </h4>
+                      {room.host.isVerified && <VerifiedBadge size="sm" />}
+                    </div>
+
+                    <p className="text-xs font-medium text-[#7B8492] line-clamp-1" title={room.title}>
+                      {room.title}
+                    </p>
+                  </div>
+
+                  {/* Cyan Join Call Pill Button */}
+                  <button
+                    onClick={() => setSelectedRoom(room)}
+                    className="w-full py-2.5 px-4 rounded-full bg-[#00AEEF] hover:bg-[#009cdb] active:scale-[0.98] text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-xs hover:shadow-md transition-all cursor-pointer"
+                    title={`Join Call with ${room.host.displayName}`}
+                  >
+                    <Phone className="w-4.5 h-4.5 fill-white text-white rotate-[-25deg]" />
+                    <span>Join Call</span>
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

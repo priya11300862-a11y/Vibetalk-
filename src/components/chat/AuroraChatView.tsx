@@ -152,7 +152,7 @@ export const AuroraChatView: React.FC<AuroraChatViewProps> = ({
       isOnline: true,
     },
     {
-      id: 'usr_sushmitha_101',
+      id: 'usr_sushmitha_301',
       name: 'Sushmitha',
       fullName: 'Sushmitha',
       avatar: PORTRAIT_SUSHMITHA,
@@ -894,9 +894,9 @@ export const AuroraChatView: React.FC<AuroraChatViewProps> = ({
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {availableProfiles.map((p) => (
+                  {availableProfiles.map((p, idx) => (
                     <div
-                      key={p.id}
+                      key={`aurora-avail-${p.id}-${idx}`}
                       className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/10 hover:border-white/20 transition-all flex items-center justify-between gap-3"
                     >
                       <div className="flex items-center gap-3 min-w-0">

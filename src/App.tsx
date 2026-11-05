@@ -120,39 +120,7 @@ const MainAppContent: React.FC = () => {
     setCurrentTab(newTab);
   };
 
-  const isSwipeDisabled = Boolean(currentTab === 'messages' && activeConversationId);
 
-  const handleDragEnd = (
-    _event: MouseEvent | TouchEvent | PointerEvent,
-    info: { offset: { x: number; y: number }; velocity: { x: number; y: number } }
-  ) => {
-    if (isSwipeDisabled) return;
-
-    // Detect predominantly horizontal movement
-    const isHorizontalSwipe = Math.abs(info.offset.x) > Math.abs(info.offset.y) * 1.1;
-    if (!isHorizontalSwipe) return;
-
-    const threshold = 40;
-    const velocityThreshold = 250;
-
-    const currentIndex = MAIN_TABS.indexOf(currentTab);
-    if (currentIndex === -1) return;
-
-    // Swiping left (user dragged left) -> next tab
-    if (info.offset.x < -threshold || info.velocity.x < -velocityThreshold) {
-      if (currentIndex < MAIN_TABS.length - 1) {
-        setDirection(1);
-        setCurrentTab(MAIN_TABS[currentIndex + 1]);
-      }
-    }
-    // Swiping right (user dragged right) -> previous tab
-    else if (info.offset.x > threshold || info.velocity.x > velocityThreshold) {
-      if (currentIndex > 0) {
-        setDirection(-1);
-        setCurrentTab(MAIN_TABS[currentIndex - 1]);
-      }
-    }
-  };
 
   const tabVariants = {
     enter: (dir: number) => ({
@@ -300,13 +268,7 @@ const MainAppContent: React.FC = () => {
                 initial="enter"
                 animate="center"
                 exit="exit"
-                drag={isSwipeDisabled ? false : 'x'}
-                dragDirectionLock
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.12}
-                dragMomentum={false}
-                onDragEnd={handleDragEnd}
-                className="w-full flex-1 touch-pan-y"
+                className="w-full flex-1"
               >
                 {currentTab === 'home' && (
                   <HomeDashboard
@@ -342,27 +304,6 @@ const MainAppContent: React.FC = () => {
                 {currentTab === 'calls' && <CallHistoryView />}
               </motion.div>
             </AnimatePresence>
-
-            {/* Mobile Tab Swipe Indicator Dots */}
-            <div
-              aria-hidden="true"
-              className="md:hidden flex items-center justify-center gap-1.5 py-1.5 select-none pointer-events-none opacity-50"
-            >
-              {MAIN_TABS.map((tab) => (
-                <div
-                  key={tab}
-                  className={`h-1 rounded-full transition-all duration-300 ${
-                    currentTab === tab
-                      ? isHighContrast
-                        ? 'w-4 bg-yellow-400'
-                        : 'w-4 bg-[#1877F2]'
-                      : isHighContrast
-                      ? 'w-1 bg-white/40'
-                      : 'w-1 bg-[#CBD5E1]'
-                  }`}
-                />
-              ))}
-            </div>
           </div>
         )}
       </main>

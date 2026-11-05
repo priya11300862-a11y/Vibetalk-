@@ -255,8 +255,8 @@ export const PrivacyCenterModal: React.FC<PrivacyCenterModalProps> = ({ isOpen, 
               <p className="text-[#7B8492] text-[11px]">You have not blocked any users.</p>
             ) : (
               <div className="space-y-1.5">
-                {blockedUserIds.map((userId) => (
-                  <div key={userId} className="flex items-center justify-between py-1 px-2.5 rounded-md bg-white border border-[#E1E5EC]">
+                {blockedUserIds.map((userId, idx) => (
+                  <div key={`blocked-user-${userId}-${idx}`} className="flex items-center justify-between py-1 px-2.5 rounded-md bg-white border border-[#E1E5EC]">
                     <span className="font-medium text-[#303641]">{userId}</span>
                     <button
                       onClick={() => unblockUser(userId)}

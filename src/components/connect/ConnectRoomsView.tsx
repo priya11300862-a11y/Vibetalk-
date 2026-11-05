@@ -21,6 +21,7 @@ import {
   ArrowUpDown,
   Radio,
   Mic,
+  Phone,
   Star,
   UserCheck,
   UserPlus,
@@ -32,6 +33,7 @@ import { useSocial } from '../../contexts/SocialContext';
 import { useCall } from '../../contexts/CallContext';
 import { useAccessibility } from '../../contexts/AccessibilityContext';
 import { UserProfile } from '../../types';
+import { VerifiedBadge } from '../common/VerifiedBadge';
 import {
   INITIAL_DISCOVER_PROFILES,
   CONNECT_TOPICS,
@@ -154,10 +156,10 @@ export const ConnectRoomsView: React.FC<ConnectRoomsViewProps> = ({
   }, [profiles]);
 
   // Featured constellation profiles
-  const ruhi = INITIAL_DISCOVER_PROFILES[0];
-  const ananya = INITIAL_DISCOVER_PROFILES[1];
-  const rakhi = INITIAL_DISCOVER_PROFILES[2];
-  const milkee = INITIAL_DISCOVER_PROFILES[3];
+  const ruhi = allProfiles.find((p) => p.id === 'usr_ruhi_201') || allProfiles[0];
+  const ananya = allProfiles.find((p) => p.id === 'usr_ananya_202') || allProfiles[1];
+  const rakhi = allProfiles.find((p) => p.id === 'usr_rakhi_102') || allProfiles[2];
+  const milkee = allProfiles.find((p) => p.id === 'usr_milkee_203') || allProfiles[3];
 
   // Dynamic curated live rooms data
   const initialRooms: ConnectRoomItem[] = useMemo(() => [
@@ -258,9 +260,9 @@ export const ConnectRoomsView: React.FC<ConnectRoomsViewProps> = ({
       id: 'room_tamil_music_jam',
       title: 'Indie Beats & Tamil Lo-Fi Jam',
       description: 'Jamming acoustic melodies, regional indie songs, and peaceful background vibes.',
-      host: allProfiles.find((p) => p.id === 'usr_sushmitha_101') || allProfiles[0],
+      host: allProfiles.find((p) => p.id === 'usr_sushmitha_301') || allProfiles[0],
       speakers: [
-        allProfiles.find((p) => p.id === 'usr_sushmitha_101') || allProfiles[0],
+        allProfiles.find((p) => p.id === 'usr_sushmitha_301') || allProfiles[0],
         allProfiles.find((p) => p.id === 'usr_marcus_003') || allProfiles[4],
       ],
       listenerCount: 198,
@@ -273,8 +275,8 @@ export const ConnectRoomsView: React.FC<ConnectRoomsViewProps> = ({
       activeTopic: 'Music',
       conversationSnippet: [
         {
-          speakerName: (allProfiles.find((p) => p.id === 'usr_sushmitha_101') || allProfiles[0]).displayName,
-          avatarUrl: (allProfiles.find((p) => p.id === 'usr_sushmitha_101') || allProfiles[0]).avatarUrl,
+          speakerName: (allProfiles.find((p) => p.id === 'usr_sushmitha_301') || allProfiles[0]).displayName,
+          avatarUrl: (allProfiles.find((p) => p.id === 'usr_sushmitha_301') || allProfiles[0]).avatarUrl,
           text: 'Let us tune acoustic chords in D-major for this unplugged melody cover next.',
           timeAgo: '1m ago',
           isHost: true,
@@ -729,11 +731,13 @@ export const ConnectRoomsView: React.FC<ConnectRoomsViewProps> = ({
 
           {/* 4 Spotlight Avatars Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            {[ruhi, ananya, rakhi, milkee].map((member) => {
-              const status = getEffectiveStatus(member);
-              return (
-                <div
-                  key={member.id}
+            {[ruhi, ananya, rakhi, milkee]
+              .filter((m, i, arr) => m && arr.findIndex((x) => x?.id === m?.id) === i)
+              .map((member, idx) => {
+                const status = getEffectiveStatus(member);
+                return (
+                  <div
+                    key={`spotlight-${member.id}-${idx}`}
                   className="p-3 rounded-lg border border-[#E1E5EC] bg-[#F5F7FC] hover:border-[#1877F2]/40 text-center space-y-2 transition-all group"
                 >
                   <div
@@ -753,12 +757,15 @@ export const ConnectRoomsView: React.FC<ConnectRoomsViewProps> = ({
                   </div>
 
                   <div>
-                    <h4
-                      onClick={() => onSelectProfile && onSelectProfile(member)}
-                      className="text-xs font-bold text-[#303641] hover:text-[#1877F2] truncate cursor-pointer"
-                    >
-                      {member.displayName}
-                    </h4>
+                    <div className="flex items-center justify-center gap-1">
+                      <h4
+                        onClick={() => onSelectProfile && onSelectProfile(member)}
+                        className="text-xs font-bold text-[#303641] hover:text-[#1877F2] truncate cursor-pointer"
+                      >
+                        {member.displayName}
+                      </h4>
+                      {member.isVerified && <VerifiedBadge size="xs" />}
+                    </div>
                     <p className="text-[10px] text-[#7B8492] truncate">{member.broadLocation}</p>
                     {member.activeTopic && (
                       <span className="inline-block mt-1 px-1.5 py-0.2 rounded bg-[#EAF2FF] text-[#1877F2] text-[10px] font-semibold">
@@ -906,11 +913,11 @@ export const ConnectRoomsView: React.FC<ConnectRoomsViewProps> = ({
           {/* =========================================================================
               5. LIVE CONNECT ROOM CARDS GRID
               ========================================================================= */}
-          <div className="grid grid-cols-1 gap-3 pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 pt-1">
             {processedRooms.length === 0 ? (
               <div
-                className={`p-6 rounded-xl border text-center space-y-2 shadow-xs ${
-                  isHighContrast ? 'bg-black border-white' : 'bg-white border-[#E1E5EC]'
+                className={`col-span-full p-8 rounded-2xl border text-center space-y-2 shadow-xs ${
+                  isHighContrast ? "bg-black border-white" : "bg-white border-[#E1E5EC]"
                 }`}
               >
                 <Tag className="w-8 h-8 text-[#7B8492] mx-auto opacity-50" />
@@ -920,218 +927,167 @@ export const ConnectRoomsView: React.FC<ConnectRoomsViewProps> = ({
                 </p>
                 <button
                   onClick={handleResetFilters}
-                  className="px-4 py-1.5 rounded-lg bg-[#1877F2] text-white text-xs font-semibold hover:bg-[#166fe5] shadow-xs"
+                  className="px-4 py-1.5 rounded-lg bg-[#1877F2] text-white text-xs font-semibold hover:bg-[#166fe5] shadow-xs cursor-pointer"
                 >
                   View All Rooms
                 </button>
               </div>
             ) : (
-              processedRooms.map((room) => (
-                <div
-                  key={room.id}
-                  className={`p-4 rounded-xl border space-y-3 shadow-xs hover:border-[#1877F2]/40 transition-all ${
-                    isHighContrast ? 'bg-black border-white' : 'bg-white border-[#E1E5EC]'
-                  }`}
-                >
-                  {/* Room Header: Title, Live Tag, Listener Count, Created Time */}
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="space-y-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-[#16865C] border border-emerald-200 text-[10px] font-bold uppercase tracking-wider">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#16865C] animate-pulse" />
-                          <span>LIVE</span>
-                        </span>
+              processedRooms.map((room, rIdx) => {
+                const themes = [
+                  {
+                    pastelBg: "bg-gradient-to-b from-[#E0F7FA] via-[#E8F8FE] to-[#EAF6FB]",
+                    ringStyle: "bg-gradient-to-tr from-amber-200 via-rose-100 to-amber-300 ring-2 ring-amber-300/80 shadow-md",
+                    ringBadge: "PEARL",
+                    hasStar: false,
+                  },
+                  {
+                    pastelBg: "bg-gradient-to-b from-[#F3E8FF] via-[#F8F2FF] to-[#FAF5FF]",
+                    ringStyle: "bg-gradient-to-tr from-slate-500 via-slate-300 to-slate-600 ring-2 ring-slate-300 shadow-md",
+                    ringBadge: null,
+                    hasStar: true,
+                  },
+                  {
+                    pastelBg: "bg-gradient-to-b from-[#EDE9FE] via-[#F4F1FE] to-[#F5F3FF]",
+                    ringStyle: "bg-gradient-to-tr from-amber-400 via-yellow-300 to-orange-400 ring-2 ring-amber-400 shadow-lg shadow-amber-400/25",
+                    ringBadge: null,
+                    hasStar: true,
+                  },
+                  {
+                    pastelBg: "bg-gradient-to-b from-[#FCE7F3] via-[#FDF2F8] to-[#FFF1F2]",
+                    ringStyle: "bg-gradient-to-tr from-rose-300 via-slate-200 to-rose-400 ring-2 ring-rose-200 shadow-md",
+                    ringBadge: null,
+                    hasStar: true,
+                  },
+                  {
+                    pastelBg: "bg-gradient-to-b from-[#FEF3C7] via-[#FFFBEB] to-[#FEF9C3]",
+                    ringStyle: "bg-gradient-to-tr from-amber-300 via-yellow-200 to-amber-400 ring-2 ring-amber-300 shadow-md",
+                    ringBadge: "GOLD",
+                    hasStar: false,
+                  },
+                ];
+                const theme = themes[rIdx % themes.length];
+                const nativeScript =
+                  room.languageScript ||
+                  (room.language?.toLowerCase().includes("tamil")
+                    ? "தமிழ்"
+                    : room.language?.toLowerCase().includes("hindi")
+                    ? "हिंदी"
+                    : room.language?.toLowerCase().includes("telugu")
+                    ? "తెలుగు"
+                    : room.language?.toLowerCase().includes("bengali")
+                    ? "বাংলা"
+                    : room.language || "EN");
 
-                        <span className="text-xs text-[#7B8492] flex items-center gap-1">
-                          <Globe2 className="w-3.5 h-3.5 text-[#1877F2]" />
-                          <span>{room.language}</span>
-                          {room.languageScript && (
-                            <span className="text-[10px] text-[#7B8492] font-semibold">
-                              ({room.languageScript})
-                            </span>
-                          )}
-                        </span>
+                return (
+                  <div
+                    key={room.id}
+                    className={`relative rounded-[26px] border border-[#E1E5EC] bg-white overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col justify-between group ${
+                      isHighContrast ? "bg-black border-white" : ""
+                    }`}
+                  >
+                    {/* Top Pastel Header Area */}
+                    <div className={`h-24 sm:h-28 w-full ${theme.pastelBg} relative p-3 flex items-start justify-between`}>
+                      {/* Top Left: LIVE status badge */}
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-[#16865C] border border-emerald-200 text-[10.5px] font-bold shadow-2xs">
+                        <span className="w-2 h-2 rounded-full bg-[#16865C] animate-pulse" />
+                        <span>LIVE</span>
+                      </span>
 
-                        <span className="text-xs text-[#7B8492] flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5" />
-                          <span>{room.createdTimeAgo}</span>
-                        </span>
-                      </div>
-
-                      <h3 className="text-sm sm:text-base font-bold text-[#303641] leading-snug">
-                        {room.title}
-                      </h3>
-                      <p className="text-xs text-[#7B8492] line-clamp-2">
-                        {room.description}
-                      </p>
+                      {/* Top Right: Listener count badge */}
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-[#303641] border border-[#E1E5EC] text-[11px] font-semibold shadow-2xs">
+                        <Users className="w-3.5 h-3.5 text-[#1877F2]" />
+                        <span>{room.listenerCount}</span>
+                      </span>
                     </div>
 
-                    {/* Listener count badge */}
-                    <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F5F7FC] border border-[#E1E5EC] text-xs font-semibold text-[#303641] shrink-0">
-                      <Users className="w-3.5 h-3.5 text-[#1877F2]" />
-                      <span>{room.listenerCount}</span>
-                    </div>
-                  </div>
+                    {/* Centered Circular Avatar with Decorative Ring Frame & Badges */}
+                    <div className="-mt-13 sm:-mt-14 flex flex-col items-center relative z-10 px-3">
+                      <div
+                        onClick={() => onSelectProfile && onSelectProfile(room.host)}
+                        className={`relative w-20 h-20 sm:w-22 sm:h-22 rounded-full p-1 cursor-pointer transition-transform group-hover:scale-105 ${theme.ringStyle}`}
+                        title={`Host: ${room.host.displayName}`}
+                      >
+                        {/* Top sparkle star if present */}
+                        {theme.hasStar && (
+                          <span className="absolute -top-1.5 left-1/2 -translate-x-1/2 text-white drop-shadow text-xs">
+                            ✦
+                          </span>
+                        )}
 
-                  {/* Prominent Interest Tags & Conversation Snippet Expand Button */}
-                  <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      {room.tags.map((tag) => (
-                        <button
-                          key={tag}
-                          onClick={() => setSelectedInterestTag(tag)}
-                          className={`px-2.5 py-0.5 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
-                            selectedInterestTag.toLowerCase() === tag.toLowerCase()
-                              ? 'bg-[#1877F2] text-white border-[#1877F2] font-semibold'
-                              : 'bg-[#EAF2FF] text-[#1877F2] border-[#1877F2]/25 hover:bg-[#1877F2] hover:text-white'
-                          }`}
-                          title={`Filter by ${tag}`}
-                        >
-                          {tag}
-                        </button>
-                      ))}
-                    </div>
+                        {/* Side badge text (e.g. "PEARL") */}
+                        {theme.ringBadge && (
+                          <span className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 px-1 py-0.2 rounded-full bg-amber-100 border border-amber-300 text-[8px] font-black text-amber-900 tracking-tighter uppercase shadow-2xs rotate-90">
+                            {theme.ringBadge}
+                          </span>
+                        )}
 
-                    {/* Expand Button for 2-Line Active Conversation Snippet */}
-                    <button
-                      onClick={() => toggleRoomExpand(room.id)}
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer border ${
-                        expandedRoomIds[room.id]
-                          ? 'bg-[#EAF2FF] text-[#1877F2] border-[#1877F2]/40 shadow-2xs font-bold'
-                          : 'bg-white hover:bg-[#F5F7FC] text-[#7B8492] hover:text-[#1877F2] border-[#E1E5EC]'
-                      }`}
-                      aria-expanded={!!expandedRoomIds[room.id]}
-                      title={
-                        expandedRoomIds[room.id]
-                          ? 'Collapse live conversation snippet'
-                          : 'Expand active conversation snippet (2 lines)'
-                      }
-                    >
-                      <MessageSquare className="w-3.5 h-3.5 text-[#1877F2]" />
-                      <span>{expandedRoomIds[room.id] ? 'Hide Snippet' : 'Expand Snippet'}</span>
-                      {expandedRoomIds[room.id] ? (
-                        <ChevronUp className="w-3.5 h-3.5 text-[#1877F2]" />
-                      ) : (
-                        <ChevronDown className="w-3.5 h-3.5 text-[#7B8492]" />
-                      )}
-                    </button>
-                  </div>
-
-                  {/* Revealed 2-Line Active Conversation Snippet */}
-                  {expandedRoomIds[room.id] && (
-                    <div className="p-3 rounded-lg bg-[#F5F7FC] border border-[#1877F2]/25 space-y-2 animate-in fade-in duration-200">
-                      <div className="flex items-center justify-between pb-1.5 border-b border-[#E1E5EC]">
-                        <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1877F2]">
-                          <Radio className="w-3.5 h-3.5 text-[#1877F2] animate-pulse" />
-                          <span>Live Conversation Snippet</span>
-                        </div>
-                        <span className="text-[10px] text-[#7B8492] font-semibold flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#16865C] animate-ping" />
-                          <span>Active 2-line preview</span>
-                        </span>
-                      </div>
-
-                      <div className="space-y-1.5">
-                        {room.conversationSnippet.map((snippet, sIdx) => (
-                          <div
-                            key={sIdx}
-                            className="flex items-start gap-2 bg-white p-2 rounded-md border border-[#E1E5EC] shadow-2xs"
-                          >
-                            <img
-                              src={snippet.avatarUrl}
-                              alt={snippet.speakerName}
-                              className="w-5 h-5 rounded-full object-cover shrink-0 mt-0.5 border border-white shadow-2xs"
-                            />
-                            <div className="min-w-0 flex-1 leading-snug text-xs">
-                              <span className="font-bold text-[#303641] mr-1.5 inline-flex items-center gap-1">
-                                {snippet.speakerName}
-                                {snippet.isHost && (
-                                  <span className="text-[9px] px-1 py-0.2 rounded bg-[#EAF2FF] text-[#1877F2] font-semibold">
-                                    Host
-                                  </span>
-                                )}
-                                :
-                              </span>
-                              <span className="text-[#303641] font-normal italic">
-                                "{snippet.text}"
-                              </span>
-                            </div>
-                            {snippet.timeAgo && (
-                              <span className="text-[10px] text-[#7B8492] shrink-0 font-medium">
-                                {snippet.timeAgo}
-                              </span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Room Host & Speakers + Action Buttons */}
-                  <div className="pt-2 border-t border-[#E1E5EC] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    {/* Host and Speaker Avatars */}
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="flex items-center -space-x-2 shrink-0">
-                        <div
-                          onClick={() => onSelectProfile && onSelectProfile(room.host)}
-                          className="w-8 h-8 rounded-full overflow-hidden border-2 border-white shadow-xs cursor-pointer"
-                          title={`Host: ${room.host.displayName}`}
-                        >
+                        {/* Avatar Image */}
+                        <div className="w-full h-full rounded-full overflow-hidden bg-slate-100 border-2 border-white shadow-inner">
                           <img
                             src={room.host.avatarUrl}
                             alt={room.host.displayName}
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        {room.speakers.slice(0, 2).map((spk, idx) => (
-                          <div
-                            key={idx}
-                            onClick={() => onSelectProfile && onSelectProfile(spk)}
-                            className="w-8 h-8 rounded-full overflow-hidden border-2 border-white shadow-xs cursor-pointer"
-                            title={`Speaker: ${spk.displayName}`}
-                          >
-                            <img
-                              src={spk.avatarUrl}
-                              alt={spk.displayName}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        ))}
-                      </div>
 
-                      <div className="text-xs truncate">
-                        <span className="text-[#7B8492]">Hosted by </span>
+                        {/* Online Green Status Indicator Dot at top-right */}
                         <span
-                          onClick={() => onSelectProfile && onSelectProfile(room.host)}
-                          className="font-bold text-[#303641] hover:text-[#1877F2] cursor-pointer"
-                        >
-                          {room.host.displayName}
+                          className="absolute top-0 right-0 w-4.5 h-4.5 rounded-full bg-[#16865C] border-2 border-white shadow-xs"
+                          title="Online now"
+                        />
+
+                        {/* Native Language Pill Badge centered at bottom of avatar */}
+                        <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-white border border-[#E1E5EC] text-xs font-bold text-[#303641] shadow-xs flex items-center gap-1 whitespace-nowrap">
+                          <span>{nativeScript}</span>
                         </span>
                       </div>
                     </div>
 
-                    {/* Join / Call Controls */}
-                    <div className="flex items-center gap-2 self-end sm:self-auto">
-                      <button
-                        onClick={() => handleStartAudioCall(room.host, room.tags[0])}
-                        className="px-3 py-1.5 rounded-lg border border-[#E1E5EC] bg-white hover:bg-[#EAF2FF] text-[#1877F2] hover:border-[#1877F2]/40 text-xs font-semibold flex items-center gap-1.5 transition-colors"
-                        title="Voice Call Host"
-                      >
-                        <Mic className="w-3.5 h-3.5" />
-                        <span>Speak</span>
-                      </button>
+                    {/* Card Body (White area below avatar) */}
+                    <div className="px-4 pt-4 pb-4 sm:pb-5 text-center flex-1 flex flex-col justify-between space-y-3">
+                      {/* Identity & Room Title */}
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-center gap-1.5">
+                          <h4
+                            onClick={() => onSelectProfile && onSelectProfile(room.host)}
+                            className="text-base sm:text-lg font-black text-[#303641] hover:text-[#1877F2] transition-colors truncate cursor-pointer tracking-tight"
+                          >
+                            {room.host.displayName}
+                          </h4>
+                          {room.host.isVerified && <VerifiedBadge size="sm" />}
+                        </div>
 
+                        <p className="text-xs font-medium text-[#7B8492] line-clamp-1" title={room.title}>
+                          {room.title}
+                        </p>
+
+                        {/* Topic Tags */}
+                        <div className="flex items-center justify-center gap-1.5 flex-wrap pt-0.5">
+                          {room.tags.slice(0, 2).map((tag) => (
+                            <span
+                              key={tag}
+                              className="px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-[#EAF2FF] text-[#1877F2] border border-[#1877F2]/20"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Bottom Action: Signature Vibrant Cyan "Join Call" Pill Button from Screenshots */}
                       <button
                         onClick={() => handleStartAudioCall(room.host, room.tags[0])}
-                        className="px-4 py-1.5 rounded-lg bg-[#1877F2] hover:bg-[#166fe5] text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-colors"
+                        className="w-full py-2.5 sm:py-3 px-4 rounded-full bg-[#00AEEF] hover:bg-[#009cdb] active:scale-[0.98] text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-xs hover:shadow-md transition-all cursor-pointer"
+                        title={`Join Call with ${room.host.displayName}`}
                       >
-                        <Radio className="w-3.5 h-3.5" />
-                        <span>Join Room</span>
+                        <Phone className="w-4.5 h-4.5 fill-white text-white rotate-[-25deg]" />
+                        <span>Join Call</span>
                       </button>
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>

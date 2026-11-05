@@ -103,12 +103,32 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   activityVisibility: 'everyone',
 };
 
+const deduplicateProfiles = (list: UserProfile[]): UserProfile[] => {
+  const map = new Map<string, UserProfile>();
+  list.forEach((p) => {
+    if (p && p.id && !map.has(p.id)) {
+      map.set(p.id, p);
+    }
+  });
+  return Array.from(map.values());
+};
+
 export const SocialProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { currentUser, updateCurrentUserProfile } = useAuth();
 
   const [profiles, setProfiles] = useState<UserProfile[]>(() => {
     const saved = localStorage.getItem('vibetalk_profiles');
-    return saved ? JSON.parse(saved) : INITIAL_DISCOVER_PROFILES;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return deduplicateProfiles(parsed);
+        }
+      } catch {
+        // Fallback
+      }
+    }
+    return deduplicateProfiles(INITIAL_DISCOVER_PROFILES);
   });
 
   const [conversations, setConversations] = useState<Conversation[]>(() => {
@@ -486,7 +506,7 @@ export const SocialProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   // Persistence
   useEffect(() => {
-    localStorage.setItem('vibetalk_profiles', JSON.stringify(profiles));
+    localStorage.setItem('vibetalk_profiles', JSON.stringify(deduplicateProfiles(profiles)));
     localStorage.setItem('vibetalk_conversations', JSON.stringify(conversations));
     localStorage.setItem('vibetalk_messages', JSON.stringify(chatMessages));
     localStorage.setItem('vibetalk_notifs', JSON.stringify(notifications));
@@ -696,7 +716,7 @@ export const SocialProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const acceptConnectionRequest = (senderUserId: string) => {
     setPendingRequestIds((prev) => prev.filter((id) => id !== senderUserId));
-    setConnectedUserIds((prev) => [...prev, senderUserId]);
+    setConnectedUserIds((prev) => (prev.includes(senderUserId) ? prev : [...prev, senderUserId]));
 
     const sender = profiles.find((p) => p.id === senderUserId);
     if (sender) {
@@ -729,7 +749,7 @@ export const SocialProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const blockUser = (targetUserId: string, reason?: string) => {
-    setBlockedUserIds((prev) => [...prev, targetUserId]);
+    setBlockedUserIds((prev) => (prev.includes(targetUserId) ? prev : [...prev, targetUserId]));
     removeConnection(targetUserId);
 
     // Audit log

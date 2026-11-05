@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   ChevronLeft,
   Share2,
@@ -33,6 +33,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { UserProfile, ProfileBadge } from '../../types';
+import { VerifiedBadge } from '../common/VerifiedBadge';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSocial } from '../../contexts/SocialContext';
 import { useCall } from '../../contexts/CallContext';
@@ -58,6 +59,7 @@ import {
 import { ProfilePreviewMode, ProfileOptionsModal } from './ProfileOptionsModal';
 import { InterestTagPickerModal } from './InterestTagPickerModal';
 import { CoinWalletModal } from '../home/CoinWalletModal';
+import { DailyActiveStreakCounter } from './DailyActiveStreakCounter';
 import { getInterestIcon, calculateProfileMatch } from '../../services/interestTags';
 
 interface ProfileViewProps {
@@ -101,11 +103,19 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     }
   }, [targetProfile]);
 
-  // Available international roster
-  const internationalRoster: UserProfile[] = [
-    ...(currentUser ? [currentUser] : []),
-    ...INITIAL_DISCOVER_PROFILES,
-  ];
+  // Available international roster (strictly deduplicated by user id)
+  const internationalRoster: UserProfile[] = useMemo(() => {
+    const map = new Map<string, UserProfile>();
+    if (currentUser) {
+      map.set(currentUser.id, currentUser);
+    }
+    INITIAL_DISCOVER_PROFILES.forEach((p) => {
+      if (!map.has(p.id)) {
+        map.set(p.id, p);
+      }
+    });
+    return Array.from(map.values());
+  }, [currentUser]);
 
   const activeProfile: UserProfile =
     internationalRoster.find((p) => p.id === selectedProfileId) ||
@@ -379,7 +389,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               const isSelected = m.id === activeProfile.id;
               return (
                 <button
-                  key={m.id}
+                  key={`desktop-roster-${m.id}`}
                   onClick={() => setSelectedProfileId(m.id)}
                   className={`px-2.5 py-1 rounded-full text-xs transition-colors shrink-0 ${
                     isSelected
@@ -444,7 +454,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             const isSelected = m.id === activeProfile.id;
             return (
               <button
-                key={m.id}
+                key={`mobile-roster-${m.id}`}
                 onClick={() => setSelectedProfileId(m.id)}
                 className={`px-3 py-1 rounded-full text-xs transition-colors shrink-0 flex items-center gap-1 ${
                   isSelected
@@ -556,14 +566,20 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               <h2 className="text-xl sm:text-2xl font-bold text-[#303641]">
                 {activeProfile.displayName}
               </h2>
-              <div className="w-4 h-4 rounded-full bg-[#1877F2] flex items-center justify-center text-white" title="Verified Member">
-                <Check className="w-2.5 h-2.5 stroke-[3]" />
-              </div>
+              {activeProfile.isVerified && <VerifiedBadge size="md" />}
               {activeProfile.age && (
                 <span className="text-sm text-[#7B8492] font-normal">
                   {activeProfile.age}
                 </span>
               )}
+              {/* Daily Active Streak Flame Badge */}
+              <div
+                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 text-white text-xs font-bold shadow-xs cursor-default"
+                title={`${activeProfile.dailyStreak || 5} Consecutive Days Active Login Streak`}
+              >
+                <Flame className="w-3.5 h-3.5 fill-white stroke-orange-600 animate-pulse" />
+                <span>{activeProfile.dailyStreak || 5}d</span>
+              </div>
             </div>
 
             {/* Online Indicator & Location */}
@@ -749,6 +765,15 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             </div>
           )}
         </div>
+
+        {/* =========================================================================
+            DAILY ACTIVE STREAK COUNTER (Fire icon & consecutive login visualizer)
+            ========================================================================= */}
+        <DailyActiveStreakCounter
+          streak={activeProfile.dailyStreak || (isOwnProfile ? (currentUser?.dailyStreak ?? 5) : 5)}
+          userName={activeProfile.displayName}
+          isOwnProfile={isOwnProfile}
+        />
 
         {/* =========================================================================
             4. SOCIAL FLOW & MUTUAL GROUPS PILL CARDS

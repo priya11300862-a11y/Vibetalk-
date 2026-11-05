@@ -789,8 +789,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitToApp }) =
                           </td>
                         </tr>
                       ) : (
-                        filteredUsers.map((user) => (
-                          <tr key={user.id} className="hover:bg-[#F5F7FC]/70 transition-colors">
+                        filteredUsers.map((user, idx) => (
+                          <tr key={`admin-user-${user.id}-${idx}`} className="hover:bg-[#F5F7FC]/70 transition-colors">
                             <td className="py-3 px-4">
                               <div className="flex items-center gap-2.5">
                                 <img

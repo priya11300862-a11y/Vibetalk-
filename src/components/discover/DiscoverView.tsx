@@ -30,6 +30,7 @@ import {
   getEffectiveStatus,
   AvailabilityStatus,
 } from '../common/UserStatusBadge';
+import { VerifiedBadge } from '../common/VerifiedBadge';
 import { CONNECT_TOPICS } from '../../services/mockData';
 import { calculateProfileMatch, getInterestIcon, MatchResult } from '../../services/interestTags';
 
@@ -432,7 +433,7 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {processedProfiles.map(({ profile, match, effectiveStatus }) => {
+          {processedProfiles.map(({ profile, match, effectiveStatus }, idx) => {
             const isConnected = connectedUserIds.includes(profile.id);
             const isPending = pendingRequestIds.includes(profile.id);
             const isMenuOpen = activeMenuUserId === profile.id;
@@ -440,7 +441,7 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
 
             return (
               <div
-                key={profile.id}
+                key={`discover-${profile.id}-${idx}`}
                 className="group relative rounded-3xl bg-[#101722]/85 border border-white/[0.08] hover:border-[#7C5CFF]/40 overflow-hidden shadow-xl transition-all duration-300 flex flex-col justify-between"
               >
                 {/* Image Cover & Online Badge */}
@@ -530,11 +531,7 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
                       <h3 className="text-lg font-extrabold text-white truncate">
                         {profile.displayName}
                       </h3>
-                      {profile.isVerified && (
-                        <span title="Verified Adult">
-                          <CheckCircle2 className="w-4 h-4 text-[#20D9C3] shrink-0" />
-                        </span>
-                      )}
+                      {profile.isVerified && <VerifiedBadge size="sm" />}
                     </div>
                     {/* Zero-Pill Unboxed Metadata */}
                     <div className="flex items-center gap-1.5 text-xs text-slate-300 font-medium">

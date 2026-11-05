@@ -27,19 +27,55 @@
     --border-subtle: #E1E5EC;
   }
 
+  html {
+    font-size: 16.5px;
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
     background-color: var(--main-bg);
     color: var(--main-text);
     font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    font-size: 14px;
+    font-size: 16.25px;
     font-weight: 400;
-    line-height: 1.45;
+    line-height: 1.55;
     min-height: 100vh;
     overflow-x: hidden;
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+}
+
+/* Scaled font sizing to comfortably fit customer reading and tapping - increased for optimal legibility */
+.text-xs {
+  font-size: 0.9rem !important; /* ~14.8px */
+  line-height: 1.35rem !important;
+}
+
+.text-\[10px\] {
+  font-size: 0.8125rem !important; /* ~13.4px */
+  line-height: 1.15rem !important;
+}
+
+.text-\[11px\] {
+  font-size: 0.875rem !important; /* ~14.4px */
+  line-height: 1.25rem !important;
+}
+
+.text-\[9px\] {
+  font-size: 0.75rem !important; /* ~12.4px */
+  line-height: 1.05rem !important;
+}
+
+.text-sm {
+  font-size: 1.025rem !important; /* ~16.9px */
+  line-height: 1.5rem !important;
+}
+
+.text-base {
+  font-size: 1.125rem !important; /* ~18.5px */
+  line-height: 1.65rem !important;
 }
 
 /* Typography Utility Classes */
@@ -63,7 +99,7 @@
 
 .kisanshop-button {
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 15.5px;
   font-weight: 500;
   transition: all 180ms ease-in-out;
 }
@@ -73,7 +109,7 @@
   border: 1px solid #E1E5EC;
   background-color: #FFFFFF;
   color: #303641;
-  font-size: 13px;
+  font-size: 15.5px;
   transition: all 180ms ease-in-out;
 }
 .kisanshop-input:focus {

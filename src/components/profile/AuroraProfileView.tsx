@@ -228,9 +228,9 @@ export const AuroraProfileView: React.FC<AuroraProfileViewProps> = ({
 
           {/* Quick Roster Dropdown Pill */}
           <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 max-w-[190px]">
-            {availableProfiles.slice(0, 4).map((m) => (
+            {availableProfiles.slice(0, 4).map((m, idx) => (
               <button
-                key={m.id}
+                key={`aurora-roster-${m.id}-${idx}`}
                 onClick={() => onSelectProfile(m.id)}
                 className={`px-2 py-1 rounded-full text-[11px] font-bold whitespace-nowrap transition-all ${
                   m.id === profile.id

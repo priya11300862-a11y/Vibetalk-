@@ -301,11 +301,11 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({ isOpen
           {/* USERS MANAGEMENT TAB */}
           {activeTab === 'users' && (
             <div className="space-y-2 text-xs">
-              {profiles.map((p) => {
+              {profiles.map((p, idx) => {
                 const userStatus = getEffectiveStatus(p);
                 return (
                   <div
-                    key={p.id}
+                    key={`modal-profile-${p.id}-${idx}`}
                     className="p-3.5 rounded-2xl bg-[#141B26] border border-white/[0.06] flex items-center justify-between gap-3"
                   >
                     <div className="flex items-center gap-3">

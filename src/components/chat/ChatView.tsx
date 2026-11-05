@@ -36,6 +36,7 @@ import { useCall } from '../../contexts/CallContext';
 import { useAccessibility } from '../../contexts/AccessibilityContext';
 import { Message, UserProfile } from '../../types';
 import { UserStatusDot, getEffectiveStatus } from '../common/UserStatusBadge';
+import { VerifiedBadge } from '../common/VerifiedBadge';
 import { INITIAL_DISCOVER_PROFILES } from '../../services/mockData';
 import { CoinWalletModal } from '../home/CoinWalletModal';
 
@@ -337,9 +338,9 @@ export const ChatView: React.FC<ChatViewProps> = ({ onOpenReportModal, onNavigat
               Online Now ({onlineUsers.length})
             </div>
             <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar pb-1">
-              {onlineUsers.map((u) => (
+              {onlineUsers.map((u, idx) => (
                 <button
-                  key={u.id}
+                  key={`online-user-${u.id}-${idx}`}
                   onClick={() => {
                     const existingConv = conversations.find((c) => c.participant.id === u.id);
                     if (existingConv) {
@@ -413,6 +414,7 @@ export const ChatView: React.FC<ChatViewProps> = ({ onOpenReportModal, onNavigat
                           <h2 className="text-sm font-semibold text-[#303641] truncate">
                             {c.participant.displayName}
                           </h2>
+                          {c.participant.isVerified && <VerifiedBadge size="xs" />}
                           {c.isPinned && (
                             <Pin className="w-3 h-3 text-[#1877F2] fill-[#1877F2] shrink-0" />
                           )}
@@ -506,6 +508,7 @@ export const ChatView: React.FC<ChatViewProps> = ({ onOpenReportModal, onNavigat
                       <h2 className="text-sm font-bold text-[#303641] truncate">
                         {activeConversation.participant.displayName}
                       </h2>
+                      {activeConversation.participant.isVerified && <VerifiedBadge size="sm" />}
                       {activeConversation.participant.tier && (
                         <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-[#EAF2FF] text-[#1877F2] border border-[#1877F2]/20 uppercase">
                           {activeConversation.participant.tier}
@@ -1231,9 +1234,9 @@ export const ChatView: React.FC<ChatViewProps> = ({ onOpenReportModal, onNavigat
 
               {sharedMediaMessages.length > 0 ? (
                 <div className="grid grid-cols-3 gap-1.5">
-                  {sharedMediaMessages.map((m) => (
+                  {sharedMediaMessages.map((m, idx) => (
                     <div
-                      key={m.id}
+                      key={`shared-media-${m.id}-${idx}`}
                       className="aspect-square rounded-lg overflow-hidden border border-[#E1E5EC]"
                     >
                       <img
