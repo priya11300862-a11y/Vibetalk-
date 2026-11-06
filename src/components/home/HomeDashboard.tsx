@@ -29,6 +29,7 @@ import { INITIAL_LIVE_ROOMS } from '../../services/mockData';
 import { DAILY_REWARD_SCHEDULE, DailyRewardDay } from '../../services/interestTags';
 import { UserStatusDot, getEffectiveStatus } from '../common/UserStatusBadge';
 import { VerifiedBadge } from '../common/VerifiedBadge';
+import { logAuthSessionDiagnostics } from '../../services/authDiagnostics';
 
 import { CoinWalletModal } from './CoinWalletModal';
 import { LeaderboardModal } from './LeaderboardModal';
@@ -43,7 +44,7 @@ interface HomeDashboardProps {
 }
 
 export const HomeDashboard: React.FC<HomeDashboardProps> = ({ onNavigateTab }) => {
-  const { currentUser, updateCurrentUserProfile } = useAuth();
+  const { currentUser, miniMothSession, updateCurrentUserProfile } = useAuth();
   const { profiles, conversations, setActiveConversationId } = useSocial();
   const { startCall } = useCall();
   const { isHighContrast } = useAccessibility();
@@ -79,6 +80,11 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({ onNavigateTab }) =
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  // Diagnostic logging of MiniMoth authentication session state when Home tab is active
+  useEffect(() => {
+    logAuthSessionDiagnostics(currentUser, miniMothSession, 'Home Tab Active');
+  }, [currentUser, miniMothSession]);
 
   const formatCountdown = (totalSecs: number) => {
     const h = Math.floor(totalSecs / 3600);

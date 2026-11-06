@@ -1,0 +1,73 @@
+[
+  {
+    "id": "usr_me_001",
+    "phone": "+919876543210",
+    "identity_id": "id_76543210",
+    "firstName": "Alex",
+    "displayName": "Alex Rivers",
+    "username": "alex_vibe",
+    "dateOfBirth": "1998-05-14",
+    "age": 28,
+    "gender": "non-binary",
+    "country": "India",
+    "broadLocation": "Mumbai, India",
+    "bio": "Digital artist & sound designer. Passionate about ambient music, late-night deep talks, and travel.",
+    "avatarUrl": "/src/assets/images/profile_avatar_marcus_1791455902201.jpg",
+    "languages": [
+      "English",
+      "Hindi"
+    ],
+    "interests": [
+      "Music",
+      "Filter Coffee",
+      "Travel",
+      "Photography"
+    ],
+    "isVerified": true,
+    "verificationStatus": "verified",
+    "moderationStatus": "clean",
+    "isAdultConfirmed": true,
+    "isOnline": true,
+    "role": "user",
+    "subscriptionTier": "premium",
+    "coins": 250,
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-11-06T05:05:18.955Z"
+  },
+  {
+    "id": "usr_sushmitha_301",
+    "phone": "+919812345678",
+    "identity_id": "mm_id_9812345678",
+    "firstName": "Sushmitha",
+    "displayName": "Sushmitha Roy",
+    "username": "sushmitha_roy",
+    "dateOfBirth": "1999-08-20",
+    "age": 27,
+    "gender": "female",
+    "country": "India",
+    "broadLocation": "Bengaluru, India",
+    "bio": "UI designer, classical dancer, and weekend café hopper. Love long calls and good music.",
+    "avatarUrl": "/src/assets/images/portrait_sushmitha_1791458213219.jpg",
+    "languages": [
+      "English",
+      "Hindi",
+      "Bengali"
+    ],
+    "interests": [
+      "Design",
+      "Dance",
+      "Coffee",
+      "Cinema"
+    ],
+    "isVerified": true,
+    "verificationStatus": "verified",
+    "moderationStatus": "clean",
+    "isAdultConfirmed": true,
+    "isOnline": true,
+    "role": "user",
+    "subscriptionTier": "free",
+    "coins": 120,
+    "createdAt": "2026-02-15T00:00:00.000Z",
+    "updatedAt": "2026-11-06T00:00:00.000Z"
+  }
+]

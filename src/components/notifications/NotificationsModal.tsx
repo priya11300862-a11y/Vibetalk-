@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   Bell,
@@ -8,8 +8,12 @@ import {
   ShieldAlert,
   UserCheck,
   Trash2,
+  Smartphone,
+  Send,
+  Check,
 } from 'lucide-react';
 import { useSocial } from '../../contexts/SocialContext';
+import { requestPushNotificationPermission, dispatchWebPushNotification } from '../../lib/fcm';
 
 interface NotificationsModalProps {
   isOpen: boolean;
@@ -18,15 +22,48 @@ interface NotificationsModalProps {
 
 export const NotificationsModal: React.FC<NotificationsModalProps> = ({ isOpen, onClose }) => {
   const { notifications, markNotificationRead, clearAllNotifications } = useSocial();
+  const [pushStatus, setPushStatus] = useState<NotificationPermission>('default');
+  const [isRequesting, setIsRequesting] = useState(false);
+  const [testSent, setTestSent] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      setPushStatus(Notification.permission);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
+
+  const handleEnablePush = async () => {
+    setIsRequesting(true);
+    const result = await requestPushNotificationPermission();
+    setPushStatus(result.status);
+    setIsRequesting(false);
+    if (result.granted) {
+      dispatchWebPushNotification({
+        title: '🎉 Push Notifications Enabled!',
+        body: 'You will now receive alerts for new messages and incoming voice/video calls.',
+      });
+    }
+  };
+
+  const handleSendTestPush = () => {
+    dispatchWebPushNotification({
+      title: '📞 Incoming Call Test (FCM)',
+      body: 'Marcus Vance is calling you on VibeTalk...',
+      tag: 'test-call',
+      vibrate: [200, 100, 200],
+    });
+    setTestSent(true);
+    setTimeout(() => setTestSent(false), 2500);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto text-left">
       <div className="w-full max-w-lg rounded-xl bg-white border border-[#E1E5EC] p-5 sm:p-6 shadow-xl relative text-[#303641]">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-[#7B8492] hover:text-[#303641] transition-colors"
+          className="absolute top-5 right-5 text-[#7B8492] hover:text-[#303641] transition-colors cursor-pointer"
           aria-label="Close notifications modal"
         >
           <X className="w-5 h-5" />
@@ -46,7 +83,7 @@ export const NotificationsModal: React.FC<NotificationsModalProps> = ({ isOpen, 
           {notifications.length > 0 && (
             <button
               onClick={clearAllNotifications}
-              className="text-xs text-[#7B8492] hover:text-[#D9485F] flex items-center gap-1 transition-colors"
+              className="text-xs text-[#7B8492] hover:text-[#D9485F] flex items-center gap-1 transition-colors cursor-pointer"
             >
               <Trash2 className="w-3.5 h-3.5" />
               <span>Clear All</span>
@@ -54,12 +91,60 @@ export const NotificationsModal: React.FC<NotificationsModalProps> = ({ isOpen, 
           )}
         </div>
 
+        {/* FCM Push Notification Controls Card */}
+        <div className="mb-4 p-3.5 rounded-xl bg-gradient-to-r from-blue-50/70 via-indigo-50/60 to-purple-50/70 border border-[#1877F2]/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-start gap-2.5">
+            <div className="p-1.5 rounded-lg bg-blue-100 text-[#1877F2] shrink-0 mt-0.5">
+              <Smartphone className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5 font-bold text-slate-900">
+                <span>FCM Web Push Notifications</span>
+                <span
+                  className={`text-[9.5px] px-1.5 py-0.2 rounded-full font-bold uppercase tracking-wider ${
+                    pushStatus === 'granted'
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-amber-100 text-amber-800'
+                  }`}
+                >
+                  {pushStatus === 'granted' ? 'Active' : pushStatus}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 leading-tight mt-0.5">
+                Receive instant browser push notifications for incoming voice/video calls &amp; chats.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            {pushStatus === 'granted' ? (
+              <button
+                type="button"
+                onClick={handleSendTestPush}
+                className="px-3 py-1.5 rounded-lg bg-white border border-[#1877F2]/30 text-[#1877F2] font-semibold text-xs hover:bg-[#EAF2FF] transition-colors cursor-pointer flex items-center gap-1 shadow-xs"
+              >
+                {testSent ? <Check className="w-3 h-3 text-emerald-600" /> : <Send className="w-3 h-3" />}
+                <span>{testSent ? 'Dispatched!' : 'Test Push'}</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleEnablePush}
+                disabled={isRequesting}
+                className="px-3.5 py-1.5 rounded-lg bg-[#5244E3] hover:bg-[#4336c9] text-white font-bold text-xs transition-colors cursor-pointer disabled:opacity-60 shadow-xs"
+              >
+                {isRequesting ? 'Requesting...' : 'Enable Push'}
+              </button>
+            )}
+          </div>
+        </div>
+
         {notifications.length === 0 ? (
-          <div className="py-12 text-center text-[#7B8492] text-xs">
+          <div className="py-10 text-center text-[#7B8492] text-xs">
             No new notifications. You are all caught up!
           </div>
         ) : (
-          <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
+          <div className="space-y-2 max-h-[55vh] overflow-y-auto pr-1">
             {notifications.map((notif) => {
               const isUnread = !notif.isRead;
 
@@ -99,7 +184,7 @@ export const NotificationsModal: React.FC<NotificationsModalProps> = ({ isOpen, 
                     </div>
 
                     {isUnread && (
-                      <span className="w-2 h-2 rounded-full bg-[#D9485F] shrink-0 mt-2" />
+                      <span className="w-2 h-2 rounded-full bg-[#1877F2] shrink-0 mt-1.5" />
                     )}
                   </div>
                 </div>

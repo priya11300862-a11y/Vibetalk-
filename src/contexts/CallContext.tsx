@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
 import { UserProfile, CallSession, CallType, CallStatus, ConnectionQuality, CallHistoryItem } from '../types';
 import { INITIAL_CALL_HISTORY } from '../services/mockData';
+import { notifyIncomingCall } from '../lib/fcm';
 
 interface CallContextType {
   activeCall: CallSession | null;
@@ -178,6 +179,11 @@ export const CallProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isFrontCamera: true,
       isSpeakerOn: true,
     };
+    try {
+      notifyIncomingCall(fromUser.displayName || fromUser.firstName, type);
+    } catch {
+      // Safe fallback
+    }
     setActiveCall(incoming);
   };
 

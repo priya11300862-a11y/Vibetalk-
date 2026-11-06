@@ -20,6 +20,7 @@ import {
   PORTRAIT_STORY_CYAN,
 } from '../services/mockData';
 import { useAuth } from './AuthContext';
+import { notifyNewMessage, subscribeToForegroundFcm } from '../lib/fcm';
 
 interface DiscoverFilters {
   searchQuery: string;
@@ -516,6 +517,24 @@ export const SocialProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     localStorage.setItem('vibetalk_prefs', JSON.stringify(preferences));
   }, [profiles, conversations, chatMessages, notifications, reports, verificationRequests, auditLogs, preferences]);
 
+  // Subscribe to FCM Push Notifications
+  useEffect(() => {
+    subscribeToForegroundFcm((payload) => {
+      if (payload?.notification) {
+        const newNotif: NotificationItem = {
+          id: `notif_${Date.now()}`,
+          userId: currentUser?.id || 'usr_me_001',
+          type: payload.data?.type === 'call' ? 'missed_call' : 'new_message',
+          title: payload.notification.title || 'Push Notification',
+          body: payload.notification.body || '',
+          isRead: false,
+          createdAt: 'Just now',
+        };
+        setNotifications((prev) => [newNotif, ...prev]);
+      }
+    });
+  }, [currentUser?.id]);
+
   const activeConversation = conversations.find((c) => c.id === activeConversationId) || null;
   const messages = activeConversationId ? chatMessages[activeConversationId] || [] : [];
 
@@ -634,6 +653,12 @@ export const SocialProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             ...prev,
             [convId]: [...(prev[convId] || []), replyMsg],
           }));
+
+          try {
+            notifyNewMessage(peerName, replyContent, convId);
+          } catch {
+            // Safe fallback
+          }
 
           setConversations((prev) =>
             prev.map((c) =>
